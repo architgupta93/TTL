@@ -9,7 +9,8 @@ EMPTY      = b''
 DELAY      = 0.05
 BAUDRATE   = 9600
 DEF_PORT   = '/dev/ttyS1'
-WRITE_DATA = b'\xff\xff\xff\xff\xff\xff\xff\x00'
+# WRITE_DATA = b'\xff\xff\xff\xff\xff\xff\xff\x00'
+WRITE_DATA = b'\xff'
 
 def initializeSerial(port=DEF_PORT):
     ser = serial.Serial(port, BAUDRATE,
@@ -29,6 +30,5 @@ if __name__ == "__main__":
         # There is a little difference in how PC-serial and RPi-serial work. In
         # the absence of any input, PC doesn't read anything, RPi on the other
         # hand keeps putting out a stream of 0, i.e., 0x00.
-        if (serial_in != EMPTY) and (serial_in != NULL):
-            print('Read ' + str(serial_in))
+        if (serial_in == b'\xf0'):
             serial_port.write(WRITE_DATA)
