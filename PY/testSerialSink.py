@@ -29,5 +29,6 @@ if __name__ == "__main__":
         # There is a little difference in how PC-serial and RPi-serial work. In
         # the absence of any input, PC doesn't read anything, RPi on the other
         # hand keeps putting out a stream of 0, i.e., 0x00.
-        if (serial_in != NULL) and (serial_in != EMPTY):
+        if (serial_in != EMPTY) and (serial_in != NULL):
+            print('Read ' + str(serial_in))
             serial_port.write(WRITE_DATA)
