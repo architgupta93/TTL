@@ -23,8 +23,5 @@ if __name__ == "__main__":
 
     # Until interrupted
     while True:
-        # There is a little difference in how PC-serial and RPi-serial work. In
-        # the absence of any input, PC doesn't read anything, RPi on the other
-        # hand keeps putting out a stream of 0, i.e., 0x00.
         serial_port.write(WRITE_DATA)
         sleep(DELAY)
