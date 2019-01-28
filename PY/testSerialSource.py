@@ -7,7 +7,7 @@ import serial
 DELAY      = 0.05
 BAUDRATE   = 9600
 DEF_PORT   = '/dev/ttyS0'
-WRITE_DATA = b'\xff\xff\xff\xff\xff\xff\xff\xff'
+WRITE_DATA = b'\xff\xff\xff\xff\xff\xff\xf0\x00'
 
 def initializeSerial(port=DEF_PORT):
     ser = serial.Serial(port, BAUDRATE,
