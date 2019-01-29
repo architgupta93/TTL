@@ -6,7 +6,8 @@ import serial
 # which can be loaded in.
 DELAY      = 0.05
 BAUDRATE   = 9600
-DEF_PORT   = '/dev/ttyS0'
+# DEF_PORT   = '/dev/ttyS0'
+DEF_PORT   = '/dev/ttyS1'
 WRITE_DATA = b'\xff\xff\xff\xff\xff\xff\xf0\x00'
 
 def initializeSerial(port=DEF_PORT):
