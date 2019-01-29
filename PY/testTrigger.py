@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import serial
-from time import delay
+from time import sleep
 
 # Constant declarations
 BAUDRATE     = 9600
