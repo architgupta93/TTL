@@ -67,7 +67,10 @@ SerialPort::~SerialPort(){
 
 /*** Read/Write/Test functions ***/
 void SerialPort::test(){
-    
+    while (true) {
+        signal(); 
+        usleep(D_DELAY_uS);
+    }
     return;
 }
 
