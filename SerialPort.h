@@ -1,4 +1,4 @@
-#include <string.h>
+#include <string>
 #include <termios.h>
 
 class SerialPort {
@@ -11,19 +11,31 @@ class SerialPort {
 
     private:
         /*** DEFAULT SETTINGS FOR COMMUNICATION ***/
-        const char D_SERIAL_PORT[] = "/dev/ttyS0";
+        const std::string D_SERIAL_PORT = "/dev/ttyS0";
         const unsigned char D_WRITE_DATA = 0xef;
         const unsigned int D_DELAY_uS = 50000;
 
     protected:
-        struct termios tty;
+        struct termios m_tty;
         std::string m_port_name;
         int m_port;
+        speed_t in_baudrate = B9600;
+        speed_t op_baudrate = B9600;
 
     public:
+        /*** Class Constructors ***/
         SerialPort(std::string port_name);
         SerialPort();
-        bool write();
-        bool write(const std::string &message);
+
+        /*** Class Destructor ***/
+        ~SerialPort();
+
+        /*** Read/Write Functions ***/
+        void test();
+        bool signal();
+        bool message(const std::string &data);
         std::string read();
+
+        /*** Functions for updating communication port parameters ***/
+        // TODO
 };

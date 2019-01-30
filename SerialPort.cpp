@@ -7,20 +7,88 @@
 
 #include "SerialPort.h"
 #include <iostream>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <termios.h>
 
-// Class constructor with PORT NAME specified
-SerialPort::SerialPort(std::string port_name){
+/*** Class constructor with PORT NAME specified ***/
+SerialPort::SerialPort(const std::string port_name){
     m_port_name = port_name;
-    m_port = open(m_port_name, O_RDWR | O_NONBLOCK | O_NDELAY);
+    m_port = open(m_port_name.c_str(), O_RDWR | O_NONBLOCK | O_NDELAY);
+    if (m_port < 0) {
+        // Port not found or could not be assigned
+        std::cout << "Error " << errno << ": opening port " << port_name << std::endl;
+    }
 
     /*** Configure Port ***/
-    memset(&tty, sizeof(tty));
+    memset(&m_tty, 0, sizeof(m_tty));
 
     /*** Get terminal attributes, handle errors if any ***/
+    if ( tcgetattr(m_port, &m_tty) != 0 ) {
+        std::cout << "Error " << errno << " getting attributes: " << strerror(errno) << std::endl;
+    }
+
+    /*** Set the baud rate ***/
+    cfsetospeed(&m_tty, in_baudrate);
+    cfsetispeed(&m_tty, op_baudrate);
+
+    /*** Setting up parity, stopbits and other stuff ***/
+    // TODO: So far, I have no idea why some entries are ANDed and others are ORed!
+    m_tty.c_cflag     &= ~PARENB;       // Make 8N1
+    m_tty.c_cflag     &= ~CSTOPB;       // Add a stop bit
+    m_tty.c_cflag     &= ~CSIZE;
+    m_tty.c_cflag     |= CS8;
+    m_tty.c_cflag     &= ~CRTSCTS;      // No flow control, pretty unidirectional communication here
+    m_tty.c_cc[VMIN]   = 1;             // Read does not block
+    m_tty.c_cc[VTIME]  = 1;             // Read timeout (multiple of 100 ms)
+    m_tty.c_cflag     |= CREAD | CLOCAL;
+    cfmakeraw(&m_tty);                  // Make Rae
+
+    /* Flush port and then apply the attributes set above */
+    tcflush(m_port, TCIFLUSH);
+    if (tcsetattr( m_port, TCSANOW, &m_tty ) != 0 ) {
+        std::cout << " Error " << errno << " in setting attributes"  << std::endl;
+    }
 }
 
-// Default class constructor
+/*** Default class constructor ***/
 SerialPort::SerialPort(){
+    SerialPort(D_SERIAL_PORT);
+}
 
+SerialPort::~SerialPort(){
+    return;
+}
+
+/*** Read/Write/Test functions ***/
+void SerialPort::test(){
+    
+    return;
+}
+
+bool SerialPort::signal(){
+    /* Writes the default character specified in the field D_WRITE_DATA to the
+     * serial port
+     */
+    int char_written = write( m_port, &D_WRITE_DATA, sizeof(D_WRITE_DATA));
+    if (char_written == sizeof(D_WRITE_DATA))
+        return true;
+    return false;
+}
+
+bool SerialPort::message(const std::string &data){
+    int chars_written = write(m_port, &data, sizeof(data));
+    if (chars_written == data.length())
+        return true;
+    return false;
+}
+
+std::string SerialPort::read(){
+    std::cout << "Function not implemented!" << std::endl;
+    return "";
 }
