@@ -1,0 +1,40 @@
+****** Communicating with TTL pulses via serial port ******
+
+First, check port is the serial port on your machine. There are multiple ways
+of doing this...
+
+> dmesg | grep ttyS
+
+This should generate something that looks like...
+[ 0.70] 00:01: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+
+Unless you are working on Windows Subsystem for Linux (in which case dmesg is
+not available). You can just do...
+
+> ls /dev/tty*
+
+And this should reveal all the ports available to you. Pick the serial port
+that you would like to communicate on. In most cases, the port would be named
+/dev/ttyS0 or /dev/ttyS1.
+
+Start with standalone testing (a single file that tries to tap into the serial
+port and write a bunch of things).
+
+> make comm
+> ./comm.x
+
+If this works, the SerialPort api should work as well. Try
+
+> make api
+> ./api.x
+
+Main functions to note are:
+
+1. Sending a predefined 2-pulse waveform.
+<SerialPort>.signal()
+
+2. Sending a string message
+<SerialPort>.message(const std::string &data)
+
+That's it! Read functionality has not been implemented in the C++ code, might
+be done as the need arises.
