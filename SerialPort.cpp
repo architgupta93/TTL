@@ -19,12 +19,32 @@
 /*** Class constructor with PORT NAME specified ***/
 SerialPort::SerialPort(const std::string port_name){
     m_port_name = port_name;
+    initializePort();
+}
+
+/*** Default class constructor ***/
+SerialPort::SerialPort(){
+#ifdef __DEBUG__
+    std::cout << "Port not supplied, using default: " << D_SERIAL_PORT << std::endl;
+#endif
+    m_port_name = D_SERIAL_PORT;
+    initializePort();
+}
+
+void SerialPort::initializePort(){
     m_port = open(m_port_name.c_str(), O_RDWR | O_NONBLOCK | O_NDELAY);
+#ifdef __DEBUG__
+    std::cout << "Initializing Port: " << m_port_name << std::endl;
+#endif
+
     if (m_port < 0) {
         // Port not found or could not be assigned
-        std::cout << "Error " << errno << ": opening port " << port_name << std::endl;
+        std::cout << "Error " << errno << ": opening port " << m_port_name << std::endl;
     }
 
+#ifdef __DEBUG__
+    std::cout << "Port initialized. Allocating memory and setting attributes." << std::endl;
+#endif
     /*** Configure Port ***/
     memset(&m_tty, 0, sizeof(m_tty));
 
@@ -49,16 +69,18 @@ SerialPort::SerialPort(const std::string port_name){
     m_tty.c_cflag     |= CREAD | CLOCAL;
     cfmakeraw(&m_tty);                  // Make Rae
 
+#ifdef __DEBUG__
+    std::cout << "Attributes set. Flushing port." << std::endl;
+#endif
+
     /* Flush port and then apply the attributes set above */
     tcflush(m_port, TCIFLUSH);
     if (tcsetattr( m_port, TCSANOW, &m_tty ) != 0 ) {
         std::cout << " Error " << errno << " in setting attributes"  << std::endl;
     }
-}
-
-/*** Default class constructor ***/
-SerialPort::SerialPort(){
-    SerialPort(D_SERIAL_PORT);
+#ifdef __DEBUG__
+    std::cout << "Port flushed. Ready for communication." << std::endl;
+#endif
 }
 
 SerialPort::~SerialPort(){
@@ -67,6 +89,9 @@ SerialPort::~SerialPort(){
 
 /*** Read/Write/Test functions ***/
 void SerialPort::test(){
+#ifdef __DEBUG__
+    std::cout << "Testing pulses... " << std::endl;
+#endif
     while (true) {
         signal(); 
         usleep(D_DELAY_uS);
@@ -78,7 +103,7 @@ bool SerialPort::signal(){
     /* Writes the default character specified in the field D_WRITE_DATA to the
      * serial port
      */
-    int char_written = write( m_port, &D_WRITE_DATA, sizeof(D_WRITE_DATA));
+    int char_written = write(m_port, &D_WRITE_DATA, sizeof(D_WRITE_DATA));
     if (char_written == sizeof(D_WRITE_DATA))
         return true;
     return false;

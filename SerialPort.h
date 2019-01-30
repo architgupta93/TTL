@@ -1,3 +1,6 @@
+#ifndef __SERIALPORT_H__
+#define __SERIALPORT_H__
+
 #include <string>
 #include <termios.h>
 
@@ -21,6 +24,7 @@ class SerialPort {
         int m_port;
         speed_t in_baudrate = B9600;
         speed_t op_baudrate = B9600;
+        void initializePort();
 
     public:
         /*** Class Constructors ***/
@@ -39,3 +43,4 @@ class SerialPort {
         /*** Functions for updating communication port parameters ***/
         // TODO
 };
+#endif

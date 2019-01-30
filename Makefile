@@ -24,7 +24,7 @@ OBJS 	= $(SRCS:.cpp=.o)
 all: api
 
 comm: $(COMM_FILE)
-	$(cc) $(COMM_FILE) -o $@.x
+	$(CC) $(COMM_FILE) -o $@.x
 
 api: $(TEST_OBJ) $(HEADERS) $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(TEST_OBJ) -o $@.x
