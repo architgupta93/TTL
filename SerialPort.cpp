@@ -43,6 +43,8 @@ void SerialPort::initializePort(){
         // Port not found or could not be assigned
         std::cout << "Error " << errno << ": opening port " << m_port_name << std::endl;
     }
+    ioctl(m_port, SIGNAL_OFF, &RTS_FLAG);
+    ioctl(m_port, SIGNAL_OFF, &DTR_FLAG);
 
 #ifdef __DEBUG__
     std::cout << "Port initialized. Ready for pulsing." << std::endl;
@@ -66,6 +68,7 @@ void SerialPort::test(){
         std::cout << "Send [Q] to quit, anything else to continue. ";
         std::cin >> user_input;
         if (user_input.compare("Q") == 0){
+            std::cin.get();
             return;
         }
     #endif
@@ -98,7 +101,7 @@ void SerialPort::pulseDTR(){
     ioctl(m_port, SIGNAL_ON, &DTR_FLAG);
     usleep(D_PULSE_WIDTH);
 #ifdef __DEBUG__
-    std::cout << "Press ENTER to CLEAR RTS.";
+    std::cout << "Press ENTER to CLEAR DTR.";
     std::cin.get();
 #endif
     ioctl(m_port, SIGNAL_OFF, &DTR_FLAG);
