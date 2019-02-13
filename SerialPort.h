@@ -3,6 +3,12 @@
 
 #include <string>
 #include <termios.h>
+#include <sys/ioctl.h>
+
+// Definitions for ON and OFF signals on pins, these correspond to setting and
+// clearing the pins.
+#define SIGNAL_ON TIOCMBIS
+#define SIGNAL_OFF TIOCMBIC
 
 class SerialPort {
     /* Class definition for a Serial Port
@@ -15,15 +21,19 @@ class SerialPort {
     private:
         /*** DEFAULT SETTINGS FOR COMMUNICATION ***/
         const std::string D_SERIAL_PORT = "/dev/ttyS0";
-        const unsigned char D_WRITE_DATA = 0xef;
-        const unsigned int D_DELAY_uS = 50000;
+        const unsigned int D_TEST_DELAY_uS = 50000;
+        const unsigned int D_PULSE_WIDTH = 5000;
+
+        // Internal pin numbers for the two ports
+        const int RTS_FLAG = TIOCM_RTS;
+        const int DTR_FLAG = TIOCM_DTR;
+#ifdef __DEBUG__
+        std::string user_input;
+#endif
 
     protected:
-        struct termios m_tty;
         std::string m_port_name;
         int m_port;
-        speed_t in_baudrate = B9600;
-        speed_t op_baudrate = B9600;
         void initializePort();
 
     public:
@@ -36,9 +46,9 @@ class SerialPort {
 
         /*** Read/Write Functions ***/
         void test();
-        bool signal();
-        bool message(const std::string &data);
-        std::string read();
+        void pulseRTS();
+        void pulseDTR();
+        void sendBiphasicPulse();
 
         /*** Functions for updating communication port parameters ***/
         // TODO
