@@ -104,7 +104,17 @@ void SerialPort::pulseDTR(){
     ioctl(m_port, SIGNAL_OFF, &DTR_FLAG);
 }
 
-void SerialPort::sendBiphasicPulse(){
+// This function made inline so that the proxy for it, signal(), can be used
+// without having to make another function call.. The compiler probably does
+// that anyways.
+void __inline__ SerialPort::sendBiphasicPulse(){
     pulseRTS();
     pulseDTR();
+}
+
+bool SerialPort::signal(){
+// TODO: The function is a little dummy right now, the boolean output does not
+// mean very much unless the program crashes
+    sendBiphasicPulse();
+    return true;
 }

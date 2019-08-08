@@ -46,6 +46,7 @@ class SerialPort {
 
         /*** Read/Write Functions ***/
         void test();
+        bool signal();
         void pulseRTS();
         void pulseDTR();
         void sendBiphasicPulse();
