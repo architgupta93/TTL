@@ -7,7 +7,7 @@ MODULE_ID    = "[PC-SERIAL] "
 BAUDRATE     = 9600
 DEFAULT_PORT = '/dev/ttyS0'
 WRITE_DATA   = b'\xfd'
-WRITE_PERIOD = 0.05 # Perform a write every 50ms
+WRITE_PERIOD = 0.005 # Perform a write every 50ms
 
 def initializeSerialDevice(port=DEFAULT_PORT):
     ser = serial.Serial(port, BAUDRATE,
@@ -24,9 +24,16 @@ if __name__ == "__main__":
         start_time = time.time()
         try:
             while (True):
-                serial_port.write(WRITE_DATA)
+                serial_port.setDTR(True)
+                time.sleep(0.00012)
+                serial_port.setDTR(False)
+                time.sleep(0.00001)
+                serial_port.setRTS(True)
+                time.sleep(0.00012)
+                serial_port.setRTS(False)
+                time.sleep(0.00001)
                 current_time = time.time() - start_time
-                print(MODULE_ID + "Wrote to Serial port at %.2f"%current_time)
+                print(MODULE_ID + "Biphasic pulse delivered at %.2f"%current_time)
                 time.sleep(WRITE_PERIOD)
         except KeyboardInterrupt as err:
             print()
